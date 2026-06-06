@@ -37,7 +37,7 @@ public class Cosecha {
 
     public Cosecha() {}
 
-    public Cosecha(Integer id, int jaulaId, LocalDateTime fechaCosecha, int cantidad, double pesoTotal, String estado,
+    public Cosecha(Integer id, Integer jaulaId, LocalDateTime fechaCosecha, int cantidad, double pesoTotal, String estado,
         String observaciones, String motivoBloqueo) {
             this.id=id;
             this.jaulaId=jaulaId;

@@ -1,6 +1,8 @@
 package cl.SalmonesAustral.Cosecha.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.List;
 import cl.SalmonesAustral.Cosecha.modelo.Cosecha;
 import cl.SalmonesAustral.Cosecha.repository.CosechaRepository;
@@ -10,28 +12,32 @@ import cl.SalmonesAustral.Cosecha.config.SanitarioClient;
 public class CosechaService {
 
     private final CosechaRepository cosechaRepository;
-    private final SanitarioClient sanitarioClient;
+    private final WebClient sanitarioWebClient;
 
-    public CosechaService(CosechaRepository cosechaRepository, SanitarioClient sanitarioClient) {
+    public CosechaService(CosechaRepository cosechaRepository, WebClient sanitarioWebClient) {
         this.cosechaRepository = cosechaRepository;
-        this.sanitarioClient = sanitarioClient;
+        this.sanitarioWebClient = sanitarioWebClient;
     }
 
     //CREAR COSECHA CON VALIDACIÓN SANITARIA
     public Cosecha crearCosecha(Cosecha cosecha) {
 
         //  VALIDACIÓN CONTRA MICROSERVICIO SANITARIO
-        boolean puede = sanitarioClient.puedeCosechar(cosecha.getJaulaId());
+        Boolean puede = sanitarioWebClient.get()
+        .uri("/api/v1/sanitario/puede-cosechar/" + cosecha.getJaulaId())
+        .retrieve()
+        .bodyToMono(Boolean.class)
+        .block();
 
-        if (!puede) {
-            throw new RuntimeException("No se puede cosechar: estado sanitario inválido");
+        if (puede == null || !puede) {
+            throw new RuntimeException("No se puede cosechar: La jaula tiene un tratamiento sanitario activo");
         }
 
         // Validaciones locales
         if (cosecha.getCantidad() < 0 || cosecha.getPesoTotal() < 0) {
             throw new IllegalArgumentException("Cantidad y peso total deben ser positivos");
         }
-
+        cosecha.setId(null);
         return cosechaRepository.save(cosecha);
     }
 
