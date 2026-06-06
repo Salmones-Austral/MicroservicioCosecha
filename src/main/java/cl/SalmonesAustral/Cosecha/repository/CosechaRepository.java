@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 
 
-public interface CosechaRepository extends JpaRepository<Cosecha, Long> {
+public interface CosechaRepository extends JpaRepository<Cosecha, Integer> {
 
     // 🔹 Búsqueda simple (la mantenemos)
     List<Cosecha> findByJaulaId(int jaulaId);
@@ -21,7 +21,7 @@ public interface CosechaRepository extends JpaRepository<Cosecha, Long> {
     List<Cosecha> buscarPorPesoMayor(@Param("peso") double peso);
 
     //2. Cosechas en rango de fechas
-    @Query("SELECT c FROM Cosecha c WHERE c.fecha BETWEEN :inicio AND :fin")
+    @Query("SELECT c FROM Cosecha c WHERE c.fechaCosecha BETWEEN :inicio AND :fin")
     List<Cosecha> buscarPorRangoFechas(
             @Param("inicio") LocalDateTime inicio,
             @Param("fin") LocalDateTime fin
@@ -39,10 +39,6 @@ public interface CosechaRepository extends JpaRepository<Cosecha, Long> {
     );
 
     //5. Cosechas rechazadas (consulta útil de negocio)
-    @Query("SELECT c FROM Cosecha c WHERE c.estado = 'RECHAZADA'")
-    List<Cosecha> obtenerRechazadas();
-
-    //6. Promedio de peso por jaula (nivel PRO)
-    @Query("SELECT AVG(c.pesoPromedio) FROM Cosecha c WHERE c.jaulaId = :jaulaId")
-    Double promedioPesoPorJaula(@Param("jaulaId") int jaulaId);
+    //@Query("SELECT c FROM Cosecha c WHERE c.estado = 'RECHAZADA'")
+    List<Cosecha> findByEstado(String estado);
 }

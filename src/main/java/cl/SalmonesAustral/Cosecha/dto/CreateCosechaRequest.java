@@ -1,6 +1,10 @@
 package cl.SalmonesAustral.Cosecha.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
+
+
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -10,9 +14,12 @@ import jakarta.validation.constraints.Positive;
  */
 public record CreateCosechaRequest(
 
-        @NotNull(message = "El jaulaId es obligatorio")
-        @Positive(message = "El jaulaId debe ser mayor que 0")
+        @NotNull(message = "El ID de jaula es obligatorio")
+        @Positive(message = "El ID debe ser mayor que 0")
         Integer jaulaId,
+
+        @NotNull(message = "La fecha es obligatoria")
+        LocalDateTime fechaCosecha,
 
         @PositiveOrZero(message = "La cantidad no puede ser negativa")
         int cantidad,

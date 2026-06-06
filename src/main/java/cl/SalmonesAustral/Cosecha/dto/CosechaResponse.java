@@ -1,4 +1,4 @@
-package cl.SalmonesAustral.Cosecha.dto;
+/*package cl.SalmonesAustral.Cosecha.dto;
 
 public record CosechaResponse(
     Long id,
@@ -8,3 +8,4 @@ public record CosechaResponse(
     double pesoPromedio,
     String estado
 ) {}
+ */

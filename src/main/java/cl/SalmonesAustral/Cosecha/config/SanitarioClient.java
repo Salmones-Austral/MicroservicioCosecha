@@ -13,10 +13,15 @@ public class SanitarioClient {
     }
 
     public boolean puedeCosechar(int jaulaId) {
-        return webClient.get()
-                .uri("http://localhost:8083/sanitario/puede-cosechar/{id}", jaulaId)
-                .retrieve()
-                .bodyToMono(Boolean.class)
-                .block();
+        try{
+            return this.webClient.get()
+            .uri("http://localhost:8092/sanitario/jaula/" + jaulaId + "/puede cosechar")
+            .retrieve()
+            .bodyToMono(Boolean.class)
+            .block();
+        }catch(Exception e){
+            return false;
+        }
+       
     }
 }

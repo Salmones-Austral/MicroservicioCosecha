@@ -4,80 +4,91 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name="Tabla:_cosecha"
+)
 public class Cosecha {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    // Relación lógica con jaula
-    private int jaulaId;
+    @Column(name = "jula_id", nullable = false)
+    private Integer jaulaId;
 
-    // Fecha de cosecha
-    private LocalDateTime fecha;
+    @Column(name = "fecha_cosecha", nullable = false)
+    private LocalDateTime fechaCosecha;
 
-    // Cantidad de peces cosechados
+    @Column(name = "cantidad", nullable = false)
     private int cantidad;
 
-    // Peso total en kg
+    @Column(name = "peso_total", nullable = false)
     private double pesoTotal;
-
-    // Peso promedio (opcional pero útil)
-    private double pesoPromedio;
-
-    // Estado de la cosecha
-    // PENDIENTE - REALIZADA - RECHAZADA
+   
+    // PENDIENTE - REALIZADA - RECHAZADA - BLOQUEADA
+    @Column(name = "estado", nullable = false)
     private String estado;
 
-    // Motivo en caso de rechazo
+    @Column(name = "observaciones", length = 500)
     private String observaciones;
+
+    @Column(name = "motivo_bloqueo", length = 500)
+    private String motivoBloqueo;
 
     public Cosecha() {}
 
+    public Cosecha(Integer id, int jaulaId, LocalDateTime fechaCosecha, int cantidad, double pesoTotal, String estado,
+        String observaciones, String motivoBloqueo) {
+            this.id=id;
+            this.jaulaId=jaulaId;
+            this.fechaCosecha=fechaCosecha;
+            this.cantidad=cantidad;
+            this.pesoTotal=pesoTotal;
+            this.estado=estado;
+            this.observaciones=observaciones;
+            this.motivoBloqueo=motivoBloqueo;
+
+        }
+
     // GETTERS Y SETTERS
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
+    public void setId(Integer id) {
+        this.id=id;
+    }
 
-    public int getJaulaId() {
+    public Integer getJaulaId() {
         return jaulaId;
     }
 
-    public void setJaulaId(int jaulaId) {
+    public void setJaulaId(Integer jaulaId) {
         this.jaulaId = jaulaId;
     }
 
-    public LocalDateTime getFecha() {
-        return fecha;
+    public LocalDateTime getFechaCosecha() {
+        return fechaCosecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
-        this.fecha = fecha;
+    public void setFechaCosecha(LocalDateTime fechaCosecha) {
+        this.fechaCosecha = fechaCosecha;
     }
 
-    public int getCantidad() {
+    public Integer getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
 
-    public double getPesoTotal() {
+    public Double getPesoTotal() {
         return pesoTotal;
     }
 
-    public void setPesoTotal(double pesoTotal) {
+    public void setPesoTotal(Double pesoTotal) {
         this.pesoTotal = pesoTotal;
-    }
-
-    public double getPesoPromedio() {
-        return pesoPromedio;
-    }
-
-    public void setPesoPromedio(double pesoPromedio) {
-        this.pesoPromedio = pesoPromedio;
     }
 
     public String getEstado() {
@@ -94,5 +105,11 @@ public class Cosecha {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+    public String getMotivoBloqueo() {
+        return motivoBloqueo;
+    }
+    public void setMotivoBloqueo(String motivoBloqueo) {
+        this.motivoBloqueo=motivoBloqueo;
     }
 }

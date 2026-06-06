@@ -12,8 +12,7 @@ public class CosechaService {
     private final CosechaRepository cosechaRepository;
     private final SanitarioClient sanitarioClient;
 
-    public CosechaService(CosechaRepository cosechaRepository,
-                          SanitarioClient sanitarioClient) {
+    public CosechaService(CosechaRepository cosechaRepository, SanitarioClient sanitarioClient) {
         this.cosechaRepository = cosechaRepository;
         this.sanitarioClient = sanitarioClient;
     }
@@ -33,16 +32,6 @@ public class CosechaService {
             throw new IllegalArgumentException("Cantidad y peso total deben ser positivos");
         }
 
-        // Calcular peso promedio
-        if (cosecha.getCantidad() > 0) {
-            cosecha.setPesoPromedio(cosecha.getPesoTotal() / cosecha.getCantidad());
-        } else {
-            cosecha.setPesoPromedio(0);
-        }
-
-        // Estado inicial
-        cosecha.setEstado("PENDIENTE");
-
         return cosechaRepository.save(cosecha);
     }
 
@@ -50,8 +39,27 @@ public class CosechaService {
         return cosechaRepository.findAll();
     }
 
-    public Cosecha obtenerPorId(Long id) {
-        return cosechaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cosecha no encontrada"));
+    public Cosecha obtenerPorId(Integer id) {
+        return cosechaRepository.findById(id).orElseThrow(() -> new RuntimeException("Cosecha no encontrada"));
     }
-}
+
+    public List<Cosecha>obtenerRechazadas(){
+        return cosechaRepository.findByEstado("RECHAZADA");
+    }
+        //actualizar cosecha (put)
+        public Cosecha actualizarCosecha(Integer id, Cosecha cosechaModificada) {
+            //rescata el registro original de la bd
+            Cosecha cosechaExistente=obtenerPorId(id);
+            cosechaModificada.setJaulaId(cosechaExistente.getJaulaId());
+            cosechaModificada.setFechaCosecha(cosechaExistente.getFechaCosecha());
+            cosechaModificada.setCantidad(cosechaExistente.getCantidad());
+            cosechaModificada.setPesoTotal(cosechaExistente.getPesoTotal());
+
+            if("BLOQUEADA".equalsIgnoreCase(cosechaModificada.getEstado())) {
+                if(cosechaModificada.getMotivoBloqueo()==null) {
+                    cosechaModificada.setMotivoBloqueo("Bloqueo automatico preventivo por Tratamiento ");
+                }
+            }
+            return cosechaRepository.save(cosechaModificada);
+        }
+    }
