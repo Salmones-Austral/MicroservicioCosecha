@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="Tabla:_cosecha"
+@Table(name="Tabla_cosecha"
 )
 public class Cosecha {
 
@@ -13,7 +13,7 @@ public class Cosecha {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "jula_id", nullable = false)
+    @Column(name = "jaula_id", nullable = false)
     private Integer jaulaId;
 
     @Column(name = "fecha_cosecha", nullable = false)

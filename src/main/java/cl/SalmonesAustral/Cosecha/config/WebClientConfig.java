@@ -10,6 +10,6 @@ public class WebClientConfig {
 
     @Bean
     public WebClient sanitarioWebClient() {
-        return WebClient.create("http://localhost:8093");
-    }
+        return WebClient.create("http://localhost:8091");
+    }//("http://localhost:8093");
 }

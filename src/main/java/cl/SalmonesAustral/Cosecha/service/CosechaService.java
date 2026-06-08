@@ -22,21 +22,12 @@ public class CosechaService {
     //CREAR COSECHA CON VALIDACIÓN SANITARIA
     public Cosecha crearCosecha(Cosecha cosecha) {
 
-        //  VALIDACIÓN CONTRA MICROSERVICIO SANITARIO
-        Boolean puede = sanitarioWebClient.get()
-        .uri("/api/v1/sanitario/puede-cosechar/" + cosecha.getJaulaId())
-        .retrieve()
-        .bodyToMono(Boolean.class)
-        .block();
-
-        if (puede == null || !puede) {
-            throw new RuntimeException("No se puede cosechar: La jaula tiene un tratamiento sanitario activo");
-        }
 
         // Validaciones locales
         if (cosecha.getCantidad() < 0 || cosecha.getPesoTotal() < 0) {
             throw new IllegalArgumentException("Cantidad y peso total deben ser positivos");
         }
+        cosecha.setEstado("PENDIENTE");
         cosecha.setId(null);
         return cosechaRepository.save(cosecha);
     }
@@ -54,18 +45,55 @@ public class CosechaService {
     }
         //actualizar cosecha (put)
         public Cosecha actualizarCosecha(Integer id, Cosecha cosechaModificada) {
-            //rescata el registro original de la bd
-            Cosecha cosechaExistente=obtenerPorId(id);
-            cosechaModificada.setJaulaId(cosechaExistente.getJaulaId());
-            cosechaModificada.setFechaCosecha(cosechaExistente.getFechaCosecha());
-            cosechaModificada.setCantidad(cosechaExistente.getCantidad());
-            cosechaModificada.setPesoTotal(cosechaExistente.getPesoTotal());
+            Cosecha cosechaExistente=cosechaRepository.findById(id).orElseThrow(()->new RuntimeException("No se encontro la cosecha con ID: " + id));
+
+            if("COSECHADA".equals(cosechaModificada.getEstado())) {
+                 //  VALIDACIÓN CONTRA MICROSERVICIO SANITARIO
+                Boolean puede = sanitarioWebClient.get()
+                    .uri("/api/v1/sanitario/puede-cosechar/" + cosechaModificada.getJaulaId())
+                    .retrieve()
+                    .bodyToMono(Boolean.class)
+                    .block();
+
+                if (puede == null || !puede) {
+                    throw new RuntimeException("No se puede cosechar: La jaula tiene un tratamiento sanitario activo");
+                }
+
+            }
 
             if("BLOQUEADA".equalsIgnoreCase(cosechaModificada.getEstado())) {
-                if(cosechaModificada.getMotivoBloqueo()==null) {
-                    cosechaModificada.setMotivoBloqueo("Bloqueo automatico preventivo por Tratamiento ");
+                if(cosechaModificada.getMotivoBloqueo()==null || cosechaModificada.getMotivoBloqueo().isEmpty()) {
+                    cosechaExistente.setMotivoBloqueo("Bloqueo automatico preventivo por Tratamiento ");
+                }else {
+                    cosechaExistente.setMotivoBloqueo(cosechaModificada.getMotivoBloqueo());
                 }
+            }else {
+                cosechaExistente.setMotivoBloqueo(cosechaModificada.getMotivoBloqueo());
             }
+
+            
+            cosechaExistente.setCantidad(cosechaModificada.getCantidad());
+            cosechaExistente.setPesoTotal(cosechaModificada.getPesoTotal());
+            cosechaExistente.setEstado(cosechaModificada.getEstado());
+            cosechaExistente.setFechaCosecha(cosechaModificada.getFechaCosecha());
+
+
             return cosechaRepository.save(cosechaModificada);
         }
+
+    public void bloquearCosechasDeJaula(Integer jaulaId) {
+        List<Cosecha> cosechas = cosechaRepository.findByJaulaId(jaulaId);
+        for (Cosecha c:cosechas) {
+            if(c.getEstado()!=null) {
+                if(!c.getEstado().equals("COSECHADA")) {
+                    if(!c.getEstado().equals("RECHAZADA")){
+                        c.setEstado("BLOQUEADA");
+                        cosechaRepository.save(c);
+                    }
+                }
+            }
+        }
+     }
+
+
     }

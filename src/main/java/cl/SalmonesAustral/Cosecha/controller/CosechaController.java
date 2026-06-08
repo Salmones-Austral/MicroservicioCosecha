@@ -55,5 +55,11 @@ public class CosechaController {
         Cosecha actualizada=cosechaService.actualizarCosecha(id, cosechaModificada);
         return ResponseEntity.ok(actualizada);
     }
+    //tratamiento  bloquee la cosecha de una jaula
+    @PutMapping("/bloquear/{jaulaId}")
+    public ResponseEntity<Void>bloquearPorJaula(@PathVariable Integer jaulaId) {
+        cosechaService.bloquearCosechasDeJaula(jaulaId);
+        return ResponseEntity.ok().build();
+    }
 
 }

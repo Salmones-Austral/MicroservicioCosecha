@@ -10,7 +10,7 @@ public class CosechaMapper {
     // DTO -> Entity
     public static Cosecha toEntity(CreateCosechaRequest request) {
         return new Cosecha(
-            0,
+            null,
             request.jaulaId(),
             request.fechaCosecha(),
             request.cantidad(),
@@ -25,13 +25,13 @@ public class CosechaMapper {
     public static Cosecha toModel(int id, UpdateCosechaRequest request) {
         return new Cosecha(
             id,
-            0, 
-            null,
-            0,
-            0.0,
+            request.jaulaId(),
+            request.fechaCosecha(),
+            request.cantidad(),
+            request.pesoTotal(),
             request.estado(),
             request.observaciones(),
-            null
+            request.motivoBloqueo()
              
         );
     }
